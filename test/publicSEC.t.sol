@@ -2,17 +2,17 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
-import "src/SEC.sol";
+import "src/publicSEC.sol";
 
-contract SECTest is Test {
-    SEC private sec;
+contract PublicSECTest is Test {
+    PublicSEC private sec;
 
     address private employer = address(0x123);
     bytes private candidateID = "candidate1";
     uint private maxPay = 1000;
 
     function setUp() public {
-        sec = new SEC();
+        sec = new PublicSEC();
     }
 
     function testCreateJob() public {
