@@ -1,39 +1,45 @@
-# <h1 align="center"> Forge Template </h1>
+# <h1 align="center"> S.E.C. </h1>
 
-**Template repository for getting started quickly with Foundry projects**
+*Salary Expectations Checker*
 
-![Github Actions](https://github.com/foundry-rs/forge-template/workflows/CI/badge.svg)
+## Running
 
-## Getting Started
-
-Click "Use this template" on [GitHub](https://github.com/foundry-rs/forge-template) to create a new repository with this repo as the initial state.
-
-Or, if your repo already exists, run:
-```sh
-forge init
+build contracts
+```
 forge build
-forge test
 ```
 
-## Writing your first test
-
-All you need is to `import forge-std/Test.sol` and then inherit it from your test contract. Forge-std's Test contract comes with a pre-instatiated [cheatcodes environment](https://book.getfoundry.sh/cheatcodes/), the `vm`. It also has support for [ds-test](https://book.getfoundry.sh/reference/ds-test.html)-style logs and assertions. Finally, it supports Hardhat's [console.log](https://github.com/brockelmore/forge-std/blob/master/src/console.sol). The logging functionalities require `-vvvv`.
-
-```solidity
-pragma solidity 0.8.10;
-
-import "forge-std/Test.sol";
-
-contract ContractTest is Test {
-    function testExample() public {
-        vm.roll(100);
-        console.log(1);
-        emit log("hi");
-        assertTrue(true);
-    }
-}
+fund second account
+```
+forge script scripts/FundAccount.s.sol:FundAccount --broadcast --rpc-url "http://localhost:8545" --private-key <prefunded_private_key>
 ```
 
-## Development
+deploy contract from default account (we can't change this?)
+```
+<path/to/suave/>suave-geth spell deploy SEC.sol:SEC
+```
 
-This project uses [Foundry](https://getfoundry.sh). See the [book](https://book.getfoundry.sh/getting-started/installation.html) for instructions on how to install and use Foundry.
+create job from default account
+```
+<path/to/suave/>suave-geth spell conf-request <contract_address> 'createJob(uint)' '(1000)'
+```
+
+add candidate from default account--this works! (passing the --private-key param is optional)
+```
+<path/to/suave/>suave-geth spell conf-request --private-key <prefunded_private_key> 'newCandidate(uint, bytes memory)' '(0, 0xbaba)'
+```
+
+add candidate from second account--this fails!
+```
+<path/to/suave/>suave-geth spell conf-request --private-key <second_private_key> <contract_address> 'newCandidate(uint, bytes memory)' '(0, 0xdada)'
+```
+
+set min pay from second account--ok
+```
+<path/to/suave/>suave-geth spell conf-request --private-key <second_private_key> <contract_address> 'function setMinPay(uint, bytes memory, uint)' '(0,0xdada,2000)'
+```
+
+check match from second account--ok (no match in this example as 2000>1000)
+```
+<path/to/suave/>suave-geth spell conf-request --private-key <second_private_key> <contract_address> 'function isMatch(uint, bytes memory)' '(0,0xdada)'
+```
